@@ -212,14 +212,18 @@ def get_single_edge_weight(data, attr_ranges, attribute1, attribute2):
 
 def get_edge_weights(data, attr_ranges):
     edge_weights = {}
-    for attr1 in attr_ranges:
-        for attr2 in attr_ranges:
-            if attr1 == attr2:
-                continue
-            if "class" in [attr1, attr2]:
-                continue
+    attrs = attr_ranges.keys()
+    attrs.remove("class")
+    for i, attr1 in enumerate(attrs):
+        for j in range(i+1, len(attrs)):
+            attr2 = attrs[j]
             edge_weights[(attr1, attr2)] = get_single_edge_weight(data, attr_ranges, attr1, attr2)
-    return edge_weights
+    # duplicate to make lookups easier
+    final_weights = edge_weights.copy()
+    for k,v in edge_weights.iteritems():
+        a1,a2 = k
+        final_weights[(a2,a1)] = v
+    return final_weights
 
 
 def print_tree_structure(data, edges):
